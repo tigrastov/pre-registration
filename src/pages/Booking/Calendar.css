@@ -32,3 +32,25 @@
     background: #4CAF50;
     color: white;
   }
+
+
+
+
+
+
+
+  /* Calendar.css */
+.busy-marker {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: #ff4444;
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
