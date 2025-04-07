@@ -1,0 +1,40 @@
+/* Базовый стиль хедера */
+.header {
+    background-color: #4CAF50; /* Зелёный цвет */
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Логотип */
+  .logo {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-decoration: none;
+  }
+  
+  /* Навигационное меню */
+  .nav {
+    display: flex;
+    gap: 1.5rem; /* Расстояние между ссылками */
+  }
+  
+  /* Ссылки в меню */
+  .nav-link {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+  }
+  
+  .nav-link:hover {
+    color: #e0f7e0; /* Светло-зелёный при наведении */
+  }
+
+  .nav-link.active {
+    font-weight: bold;
+    border-bottom: 2px solid white;
+  }
