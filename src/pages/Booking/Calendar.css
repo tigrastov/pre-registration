@@ -1,56 +1,43 @@
-.calendar-wrapper {
-    margin-bottom: 30px;
-  }
-  
-  .calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 10px;
-    margin-top: 15px;
-  }
-  
-  .calendar-day {
-    padding: 10px;
-    text-align: center;
-    border-radius: 5px;
-    cursor: pointer;
-    background: #f0f0f0;
-    transition: all 0.3s;
-  }
-  
-  .calendar-day:hover {
-    background: #e0e0e0;
-  }
-  
-  .calendar-day.busy {
-    background: #eeeeee;
-    color: #999;
-    cursor: not-allowed;
-  }
-  
-  .calendar-day.selected {
-    background: #4CAF50;
-    color: white;
-  }
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
 
+.calendar-day {
+  padding: 10px;
+  text-align: center;
+  border-radius: 5px;
+  cursor: pointer;
+  position: relative;
+}
 
+.available {
+  background-color: #e8f5e9;
+  border: 1px solid #a5d6a7;
+}
 
+.unavailable {
+  background-color: #ffebee;
+  border: 1px solid #ef9a9a;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
 
+.selected {
+  background-color: #bbdefb;
+  border: 1px solid #64b5f6;
+  font-weight: bold;
+}
 
+.today {
+  border: 2px solid #ff9800;
+}
 
-
-  /* Calendar.css */
-.busy-marker {
+.today-marker {
   position: absolute;
   top: 2px;
   right: 2px;
-  background: #ff4444;
-  color: white;
-  border-radius: 50%;
-  width: 18px;
-  height: 18px;
   font-size: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  color: #ff9800;
 }

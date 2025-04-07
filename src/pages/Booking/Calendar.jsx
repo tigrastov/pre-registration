@@ -1,62 +1,65 @@
 import { useState, useEffect } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../firebase';
 import './Calendar.css';
 import TimeSlots from './TimeSlots';
 
 export default function Calendar() {
   const [selectedDate, setSelectedDate] = useState(null);
-  const [busyDates, setBusyDates] = useState([]);
-  const [monthDays, setMonthDays] = useState([]);
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Получаем все записи из Firebase
+  // Загружаем все записи
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, "appointments"));
-        const appointmentsData = querySnapshot.docs.map(doc => ({
+        const q = query(collection(db, "appointments"));
+        const snapshot = await getDocs(q);
+        setAppointments(snapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
-        }));
-        
-        setAppointments(appointmentsData);
-        const dates = appointmentsData.map(app => app.date);
-        setBusyDates(dates);
+        })));
       } catch (error) {
-        console.error("Error fetching appointments: ", error);
+        console.error("Ошибка загрузки:", error);
       } finally {
         setLoading(false);
       }
     };
-    
     fetchAppointments();
   }, []);
 
-  // Генерируем дни месяца
-  useEffect(() => {
+  // Генерация дней календаря
+  const generateCalendarDays = () => {
     const today = new Date();
-    const currentMonth = today.getMonth();
-    const currentYear = today.getFullYear();
+    const days = [];
+    const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
     
-    const daysInCurrentMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-    const currentMonthDays = Array.from(
-      { length: daysInCurrentMonth - today.getDate() + 1 }, 
-      (_, i) => new Date(currentYear, currentMonth, today.getDate() + i)
-    );
+    // Добавляем дни текущего месяца
+    for (let i = today.getDate(); i <= daysInMonth; i++) {
+      days.push(new Date(today.getFullYear(), today.getMonth(), i));
+    }
     
-    const nextMonthDays = Array.from({ length: 31 }, (_, i) => 
-      new Date(currentYear, currentMonth + 1, i + 1)
-    ).filter(date => date.getMonth() === currentMonth + 1);
+    // Добавляем дни следующего месяца
+    const nextMonthDays = 35 - days.length; // Для 5 недель
+    for (let i = 1; i <= nextMonthDays; i++) {
+      days.push(new Date(today.getFullYear(), today.getMonth() + 1, i));
+    }
     
-    setMonthDays([...currentMonthDays, ...nextMonthDays].slice(0, 31));
-  }, []);
+    return days.slice(0, 35); // Ограничиваем 5 неделями
+  };
+
+  // Проверка доступности даты
+  const isDateAvailable = (date) => {
+    const dateStr = date.toISOString().split('T')[0];
+    const dateApps = appointments.filter(app => app.date === dateStr);
+    return dateApps.length < 6; // Максимум 6 записей в день
+  };
 
   const handleDateClick = (date) => {
-    const dateStr = date.toISOString().split('T')[0];
-    if (!busyDates.includes(dateStr)) {
-      setSelectedDate(dateStr);
+    if (isDateAvailable(date)) {
+      setSelectedDate(date.toISOString().split('T')[0]);
+    } else {
+      alert('На эту дату уже нет свободных слотов');
     }
   };
 
@@ -66,25 +69,22 @@ export default function Calendar() {
     <div className="calendar-wrapper">
       <h2>Выберите дату</h2>
       <div className="calendar-grid">
-        {monthDays.map((date, index) => {
+        {generateCalendarDays().map((date, index) => {
           const dateStr = date.toISOString().split('T')[0];
-          const isBusy = busyDates.includes(dateStr);
+          const isAvailable = isDateAvailable(date);
           const isToday = date.toDateString() === new Date().toDateString();
-          const dateAppointments = appointments.filter(app => app.date === dateStr);
           
           return (
-            <div 
+            <div
               key={index}
               className={`calendar-day 
-                ${isBusy ? 'busy' : ''} 
+                ${isAvailable ? 'available' : 'unavailable'} 
                 ${dateStr === selectedDate ? 'selected' : ''}
                 ${isToday ? 'today' : ''}`}
-              onClick={() => !isBusy && handleDateClick(date)}
-              title={isBusy ? `Записаны: ${dateAppointments.map(a => `${a.name} ${a.time}`).join(', ')}` : ''}
+              onClick={() => isAvailable && handleDateClick(date)}
             >
               {date.getDate()}
-              {isToday && <div className="today-marker">Сегодня</div>}
-              {isBusy && <div className="busy-marker">{dateAppointments.length}</div>}
+              {isToday && <span className="today-marker">Сегодня</span>}
             </div>
           );
         })}
@@ -92,7 +92,7 @@ export default function Calendar() {
       
       {selectedDate && (
         <TimeSlots 
-          date={selectedDate} 
+          date={selectedDate}
           appointments={appointments.filter(app => app.date === selectedDate)}
         />
       )}
