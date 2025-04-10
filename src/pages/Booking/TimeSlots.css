@@ -1,81 +1,102 @@
-.client-form {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 20px;
+.timeslots-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
 }
 
-.client-form input {
-  padding: 8px 12px;
+.timeslots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.time-slot {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.time-slot.booked {
+  background-color: #ffebee;
+  cursor: not-allowed;
+}
+
+.success-message {
+  background: #4CAF50;
+  color: white;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.auth-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.auth-modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px;
+  position: relative;
+}
+
+.close-modal {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.auth-modal input {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
 
-.timeslot {
+.auth-submit {
+  width: 100%;
   padding: 10px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.timeslot:not(.booked) {
-  background-color: #e8f5e9; /* Свободные */
-  color: #2e7d32;
-}
-
-.timeslot.booked {
-  background-color: #ffebee; /* Занятые */
-  color: #c62828;
-  cursor: not-allowed;
-}
-
-.timeslot.selected {
-  background-color: #bbdefb; /* Выбранный */
-  color: #1565c0;
-  font-weight: bold;
-}
-
-.booked-label {
-  display: block;
-  font-size: 12px;
-  margin-top: 4px;
-}
-
-.submit-btn {
-  margin-top: 20px;
-  padding: 10px 20px;
-  background: #2196f3;
+  background: #4285f4;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  margin-bottom: 10px;
 }
 
-.submit-btn:disabled {
-  background: #cccccc;
-}
-
-.timeslot {
-  padding: 10px;
-  margin: 5px;
+.auth-switch {
+  background: none;
   border: none;
-  border-radius: 5px;
+  color: #4285f4;
+  text-decoration: underline;
   cursor: pointer;
+  width: 100%;
+  text-align: center;
 }
 
-.timeslot:not(.booked) {
-  background-color: #4CAF50; /* Зеленый */
-  color: white;
-}
-
-.timeslot.booked {
-  background-color: #f44336; /* Красный */
-  color: white;
-  cursor: not-allowed;
-}
-
-.timeslot.selected {
-  background-color: #2196F3; /* Синий */
-  box-shadow: 0 0 0 2px #0d47a1;
+.auth-error {
+  color: #f44336;
+  margin-bottom: 10px;
+  text-align: center;
 }

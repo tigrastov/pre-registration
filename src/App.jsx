@@ -1,82 +1,45 @@
-import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { auth } from './firebase';
 import Header from './components/Header';
 import Home from './pages/Home';
 import Booking from './pages/Booking/Booking';
-import AdminLogin from './components/AdminLogin';
+import Auth from './components/Auth';
+import Profile from './pages/Profile';
 import AdminPanel from './components/AdminPanel';
-
-// Компонент для защиты маршрутов
-const ProtectedRoute = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setUser(user);
-      setLoading(false);
-    });
-    return () => unsubscribe();
-  }, []);
-
-  if (loading) {
-    return <div className="auth-loading">Проверка авторизации...</div>;
-  }
-
-  return user ? children : <Navigate to="/admin-login" replace />;
-};
-
-// Компонент для редиректа авторизованных пользователей
-const AuthRoute = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setUser(user);
-      setLoading(false);
-    });
-    return () => unsubscribe();
-  }, []);
-
-  if (loading) {
-    return <div className="auth-loading">Проверка авторизации...</div>;
-  }
-
-  return user ? <Navigate to="/admin-panel" replace /> : children;
-};
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
     <BrowserRouter>
       <Header />
       <Routes>
-        {/* Публичные маршруты */}
         <Route path="/" element={<Home />} />
         <Route path="/booking" element={<Booking />} />
         
-        {/* Маршрут входа - доступен только НЕавторизованным */}
-        <Route
-          path="/admin-login"
-          element={
-            <AuthRoute>
-              <AdminLogin />
-            </AuthRoute>
-          }
-        />
+        {/* Аутентификация */}
+        <Route path="/login" element={<Auth mode="login" />} />
+        <Route path="/register" element={<Auth mode="register" />} />
         
-        {/* Защищённый маршрут - доступен только авторизованным */}
-        <Route
-          path="/admin-panel"
+        {/* Профиль пользователя */}
+        <Route 
+          path="/profile" 
           element={
             <ProtectedRoute>
-              <AdminPanel />
+              <Profile />
             </ProtectedRoute>
-          }
+          } 
         />
         
-        {/* Резервный редирект для несуществующих маршрутов */}
+        {/* Админка (дополнительная защита) */}
+        <Route 
+          path="/admin" 
+          element={
+            <ProtectedRoute adminOnly={true}>
+              <AdminPanel />
+            </ProtectedRoute>
+          } 
+        />
+        
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
