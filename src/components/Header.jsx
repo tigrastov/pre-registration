@@ -26,12 +26,12 @@ export default function Header() {
     <header className="header">
       <div className="header-container">
         <Link to="/" className="logo">
-          Массажный салон
+          Массажный кабинет доктора Шухова
         </Link>
         
         <nav className="main-nav">
           <Link to="/" className="nav-link">Главная</Link>
-          <Link to="/booking" className="nav-link">Запись</Link>
+          <Link to="/booking" className="nav-link">Онлайн-Запись</Link>
           {user?.email === 'admin@example.com' && (
             <Link to="/admin" className="nav-link">Админ-панель</Link>
           )}

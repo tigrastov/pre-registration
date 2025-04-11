@@ -70,25 +70,24 @@ export default function TimeSlots({ date }) {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    if (!validateForm()) return;
-
+    if (!formData.name || !formData.phone || !formData.email || !formData.password) {
+      setError('Заполните все поля');
+      return;
+    }
+  
     try {
-      // 1. Регистрируем пользователя
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        formData.email,
-        formData.password
-      );
-
-      // 2. Сохраняем профиль пользователя
+      // Создаём пользователя
+      const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+      
+      // Сохраняем профиль с именем и телефоном
       await setDoc(doc(db, "users", userCredential.user.uid), {
         name: formData.name,
         phone: formData.phone,
         email: formData.email,
         createdAt: new Date().toISOString()
       });
-
-      // 3. Создаем запись
+  
+      // Создаём запись
       await addDoc(collection(db, "appointments"), {
         userId: userCredential.user.uid,
         userName: formData.name,
@@ -97,16 +96,12 @@ export default function TimeSlots({ date }) {
         time: selectedTime,
         createdAt: new Date().toISOString()
       });
-
-      setSuccess('✅ Регистрация и запись прошли успешно!');
-      setSelectedTime(null);
-      setAuthModal(null);
-      setFormData({ name: '', phone: '', email: '', password: '' });
+  
+      setSuccess('Регистрация успешна!');
     } catch (error) {
-      setError(`Ошибка регистрации: ${error.message}`);
+      setError(`Ошибка: ${error.message}`);
     }
   };
-
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
