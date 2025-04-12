@@ -1,0 +1,134 @@
+/* Модальное окно профиля */
+.profile-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(3px);
+  }
+  
+  .profile-modal-content {
+    background: white;
+    width: 90%;
+    max-width: 450px;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    position: relative;
+  }
+  
+  .modal-close-button {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #7f8c8d;
+    transition: color 0.2s;
+  }
+  
+  .modal-close-button:hover {
+    color: #333;
+  }
+  
+  .modal-title {
+    color: #2c3e50;
+    margin-top: 0;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  /* Стили для информации профиля */
+  .profile-info {
+    margin-bottom: 25px;
+  }
+  
+  .info-item {
+    margin-bottom: 15px;
+    display: flex;
+  }
+  
+  .info-label {
+    font-weight: 600;
+    color: #34495e;
+    min-width: 80px;
+  }
+  
+  .info-value {
+    color: #333;
+  }
+  
+  /* Форма редактирования */
+  .profile-edit-form {
+    margin-bottom: 20px;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #34495e;
+  }
+  
+  .form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+  }
+  
+  /* Кнопки */
+  .modal-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+  
+  .modal-button {
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.2s;
+  }
+  
+  .modal-button.primary {
+    background: #3498db;
+    color: white;
+  }
+  
+  .modal-button.primary:hover {
+    background: #2980b9;
+  }
+  
+  .modal-button.secondary {
+    background: #ecf0f1;
+    color: #333;
+  }
+  
+  .modal-button.secondary:hover {
+    background: #bdc3c7;
+  }
+  
+  .modal-button.logout {
+    background: #e74c3c;
+    color: white;
+  }
+  
+  .modal-button.logout:hover {
+    background: #c0392b;
+  }

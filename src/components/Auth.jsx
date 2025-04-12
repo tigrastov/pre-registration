@@ -1,42 +1,100 @@
 import { useState, useEffect } from 'react';
 import { 
-  createUserWithEmailAndPassword, 
+  createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  signOut
+  updateProfile
 } from 'firebase/auth';
-import { auth } from '../firebase';
+import { auth, db } from '../firebase';
+import { doc, setDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import './Auth.css';
 
 export default function Auth({ mode = 'login' }) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    name: '',
+    phone: ''
+  });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(user => {
-      if (user) navigate('/profile');
+      if (user) navigate('/booking');
     });
     return unsubscribe;
   }, [navigate]);
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const validateForm = () => {
+    if (mode === 'register') {
+      if (!formData.name.trim()) {
+        setError('Введите имя');
+        return false;
+      }
+      if (!/^[\d\+]{10,15}$/.test(formData.phone)) {
+        setError('Введите корректный телефон (10-15 цифр)');
+        return false;
+      }
+    }
+    if (!formData.email.includes('@')) {
+      setError('Введите корректный email');
+      return false;
+    }
+    if (formData.password.length < 6) {
+      setError('Пароль должен содержать минимум 6 символов');
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validateForm()) return;
+    
     setIsLoading(true);
     setError('');
 
     try {
       if (mode === 'register') {
-        await createUserWithEmailAndPassword(auth, email, password);
+        // 1. Создаем пользователя
+        const userCredential = await createUserWithEmailAndPassword(
+          auth, 
+          formData.email, 
+          formData.password
+        );
+        
+        // 2. Обновляем профиль
+        await updateProfile(userCredential.user, {
+          displayName: formData.name
+        });
+
+        // 3. Сохраняем дополнительные данные
+        await setDoc(doc(db, "users", userCredential.user.uid), {
+          name: formData.name,
+          phone: formData.phone,
+          email: formData.email,
+          createdAt: new Date().toISOString()
+        });
       } else {
-        await signInWithEmailAndPassword(auth, email, password);
+        await signInWithEmailAndPassword(auth, formData.email, formData.password);
       }
-      navigate('/profile');
+      navigate('/booking');
     } catch (err) {
-      setError(getAuthErrorMessage(err.code));
-      console.error("Ошибка:", err);
+      let errorMessage = 'Ошибка при аутентификации';
+      if (err.code === 'auth/network-request-failed') {
+        errorMessage = 'Проблемы с интернет-соединением. Проверьте сеть.';
+      } else {
+        errorMessage = getAuthErrorMessage(err.code) || errorMessage;
+      }
+      setError(errorMessage);
+      console.error("Auth error details:", err);
     } finally {
       setIsLoading(false);
     }
@@ -52,6 +110,8 @@ export default function Auth({ mode = 'login' }) {
         return 'Пароль должен содержать минимум 6 символов';
       case 'auth/too-many-requests': 
         return 'Слишком много попыток. Попробуйте позже';
+      case 'auth/user-not-found':
+        return 'Пользователь не найден';
       default: 
         return 'Ошибка при аутентификации';
     }
@@ -63,27 +123,55 @@ export default function Auth({ mode = 'login' }) {
       {error && <p className="error-message">{error}</p>}
       
       <form onSubmit={handleSubmit} className="auth-form">
+        {mode === 'register' && (
+          <>
+            <div className="form-group">
+              <label>Имя*</label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="Ваше имя"
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Телефон*</label>
+              <input
+                type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                placeholder="+79001234567"
+                required
+              />
+            </div>
+          </>
+        )}
+        
         <div className="form-group">
-          <label>Email:</label>
+          <label>Email*</label>
           <input
             type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
             placeholder="example@mail.com"
             required
-            autoFocus
           />
         </div>
         
         <div className="form-group">
-          <label>Пароль:</label>
+          <label>Пароль*</label>
           <input
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
             placeholder={mode === 'register' ? 'Минимум 6 символов' : '••••••••'}
             required
-            minLength={mode === 'register' ? 6 : undefined}
+            minLength={6}
           />
         </div>
         
@@ -97,9 +185,21 @@ export default function Auth({ mode = 'login' }) {
 
         <div className="auth-switch">
           {mode === 'register' ? (
-            <p>Уже есть аккаунт? <button type="button" onClick={() => navigate('/login')}>Войти</button></p>
+            <p>Уже есть аккаунт? <button 
+              type="button" 
+              onClick={() => navigate('/login')}
+              className="link-button"
+            >
+              Войти
+            </button></p>
           ) : (
-            <p>Нет аккаунта? <button type="button" onClick={() => navigate('/register')}>Зарегистрироваться</button></p>
+            <p>Нет аккаунта? <button 
+              type="button" 
+              onClick={() => navigate('/register')}
+              className="link-button"
+            >
+              Зарегистрироваться
+            </button></p>
           )}
         </div>
       </form>

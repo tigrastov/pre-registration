@@ -43,30 +43,20 @@
 .user-controls {
   display: flex;
   align-items: center;
+  gap: 15px;
 }
 
-.auth-button {
-  background: #3498db;
-  color: white;
+.profile-button {
+  background: none;
   border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
+  color: white;
   cursor: pointer;
   font-size: 1rem;
-  transition: background-color 0.3s;
+  padding: 8px 15px;
+  border-radius: 4px;
+  transition: background 0.2s;
 }
 
-.auth-button:hover {
-  background: #2980b9;
-}
-
-@media (max-width: 768px) {
-  .header-container {
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .main-nav {
-    margin: 10px 0;
-  }
+.profile-button:hover {
+  background: rgba(255, 255, 255, 0.1);
 }

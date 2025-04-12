@@ -1,51 +1,181 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { auth } from '../firebase';
+import { auth, db } from '../firebase';
 import { useEffect, useState } from 'react';
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { updateProfile } from 'firebase/auth';
 import './Header.css';
+import './ProfileModal.css'; // Новый файл стилей для модалки
 
 export default function Header() {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [profileData, setProfileData] = useState({
+    name: '',
+    phone: ''
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(user => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        try {
+          const docRef = doc(db, "users", user.uid);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            setProfileData(docSnap.data());
+          } else {
+            await setDoc(docRef, {
+              name: user.displayName || '',
+              phone: '',
+              email: user.email
+            });
+          }
+        } catch (error) {
+          console.error("Error loading profile:", error);
+        }
+      }
       setUser(user);
+      setLoading(false);
     });
     return unsubscribe;
   }, []);
 
   const handleAuthClick = () => {
-    if (user) {
-      navigate('/profile');
-    } else {
-      navigate('/login');
+    if (loading) return;
+    user ? setShowProfileModal(true) : navigate('/login');
+  };
+
+  const handleSaveProfile = async () => {
+    try {
+      await updateProfile(auth.currentUser, {
+        displayName: profileData.name
+      });
+      await updateDoc(doc(db, "users", user.uid), {
+        name: profileData.name,
+        phone: profileData.phone
+      });
+      setEditMode(false);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    }
+  };
+
+  const closeModal = (e) => {
+    if (e.target === e.currentTarget) {
+      setShowProfileModal(false);
+      setEditMode(false);
     }
   };
 
   return (
     <header className="header">
       <div className="header-container">
-        <Link to="/" className="logo">
-          Массажный кабинет доктора Шухова
-        </Link>
+        <Link to="/" className="logo">Массажный кабинет</Link>
         
         <nav className="main-nav">
           <Link to="/" className="nav-link">Главная</Link>
-          <Link to="/booking" className="nav-link">Онлайн-Запись</Link>
+          <Link to="/booking" className="nav-link">Запись</Link>
           {user?.email === 'admin@example.com' && (
-            <Link to="/admin" className="nav-link">Админ-панель</Link>
+            <Link to="/admin" className="nav-link">Админ</Link>
           )}
         </nav>
         
         <div className="user-controls">
           <button 
-            onClick={handleAuthClick}
+            onClick={handleAuthClick} 
             className="auth-button"
+            disabled={loading}
           >
-            {user ? 'Мой профиль' : 'Войти'}
+            {loading ? '...' : user ? user.displayName || 'Профиль' : 'Войти'}
           </button>
         </div>
       </div>
+
+      {showProfileModal && (
+        <div className="profile-modal-overlay" onClick={closeModal}>
+          <div className="profile-modal-content">
+            <button 
+              className="modal-close-button"
+              onClick={() => setShowProfileModal(false)}
+            >
+              &times;
+            </button>
+            
+            <h2 className="modal-title">Ваш профиль</h2>
+            
+            {editMode ? (
+              <div className="profile-edit-form">
+                <div className="form-group">
+                  <label>Имя:</label>
+                  <input
+                    value={profileData.name}
+                    onChange={(e) => setProfileData({...profileData, name: e.target.value})}
+                    placeholder="Ваше имя"
+                  />
+                </div>
+                
+                <div className="form-group">
+                  <label>Телефон:</label>
+                  <input
+                    value={profileData.phone}
+                    onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
+                    placeholder="+7 (XXX) XXX-XX-XX"
+                  />
+                </div>
+                
+                <div className="modal-buttons">
+                  <button 
+                    onClick={handleSaveProfile}
+                    className="modal-button primary"
+                  >
+                    Сохранить
+                  </button>
+                  <button 
+                    onClick={() => setEditMode(false)}
+                    className="modal-button secondary"
+                  >
+                    Отмена
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="profile-info">
+                  <div className="info-item">
+                    <span className="info-label">Имя:</span>
+                    <span className="info-value">{user?.displayName || 'Не указано'}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="info-label">Email:</span>
+                    <span className="info-value">{user?.email}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="info-label">Телефон:</span>
+                    <span className="info-value">{profileData.phone || 'Не указан'}</span>
+                  </div>
+                </div>
+                
+                <div className="modal-buttons">
+                  <button 
+                    onClick={() => setEditMode(true)}
+                    className="modal-button"
+                  >
+                    Редактировать
+                  </button>
+                  <button 
+                    onClick={() => auth.signOut()}
+                    className="modal-button logout"
+                  >
+                    Выйти
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </header>
   );
 }

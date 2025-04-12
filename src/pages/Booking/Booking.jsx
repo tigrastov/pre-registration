@@ -5,7 +5,6 @@ import { useState } from 'react';
 export default function Booking() {
   const [selectedDate, setSelectedDate] = useState(null);
 
-  // Функция для форматирования даты (10 апреля 2023)
   const formatDisplayDate = (dateStr) => {
     if (!dateStr) return '';
     const [year, month, day] = dateStr.split('-');
@@ -23,9 +22,7 @@ export default function Booking() {
         {selectedDate && ` • ${formatDisplayDate(selectedDate)}`}
       </h1>
       <div className="booking-container">
-        <Calendar 
-          onDateSelect={(date) => setSelectedDate(date)} 
-        />
+        <Calendar onDateSelect={setSelectedDate} />
       </div>
     </main>
   );

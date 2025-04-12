@@ -1,0 +1,99 @@
+/* Модальное окно профиля */
+.profile-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  
+  .profile-modal.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+  
+  .profile-modal-content {
+    background: white;
+    width: 90%;
+    max-width: 400px;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    transform: translateY(-20px);
+    transition: transform 0.3s ease;
+  }
+  
+  .profile-modal.active .profile-modal-content {
+    transform: translateY(0);
+  }
+  
+  .profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .profile-title {
+    font-size: 1.5rem;
+    color: #2c3e50;
+    margin: 0;
+  }
+  
+  .close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #7f8c8d;
+  }
+  
+  .profile-info {
+    margin-bottom: 25px;
+  }
+  
+  .profile-info-item {
+    margin-bottom: 10px;
+  }
+  
+  .profile-info-label {
+    font-weight: bold;
+    color: #34495e;
+  }
+  
+  .profile-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .profile-btn {
+    padding: 10px 15px;
+    border-radius: 6px;
+    border: none;
+    background: #3498db;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s;
+    text-align: center;
+  }
+  
+  .profile-btn:hover {
+    background: #2980b9;
+  }
+  
+  .profile-btn.logout {
+    background: #e74c3c;
+  }
+  
+  .profile-btn.logout:hover {
+    background: #c0392b;
+  }
