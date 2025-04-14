@@ -1,0 +1,111 @@
+/* Модальное окно авторизации */
+.auth-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(3px);
+  }
+  
+  .auth-modal-content {
+    background: white;
+    width: 90%;
+    max-width: 400px;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    position: relative;
+  }
+  
+  .modal-close-button {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #7f8c8d;
+    transition: color 0.2s;
+  }
+  
+  .modal-close-button:hover {
+    color: #333;
+  }
+  
+  .auth-modal-content h2 {
+    margin-top: 0;
+    color: #2c3e50;
+    text-align: center;
+  }
+  
+  .auth-modal-content p {
+    text-align: center;
+    color: #7f8c8d;
+    margin-bottom: 20px;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+  }
+  
+  .form-group input:focus {
+    border-color: #3498db;
+    outline: none;
+  }
+  
+  .error-message {
+    color: #e74c3c;
+    margin: 10px 0;
+    text-align: center;
+  }
+  
+  .auth-submit-button {
+    width: 100%;
+    padding: 12px;
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin-top: 10px;
+  }
+  
+  .auth-submit-button:hover {
+    background: #2980b9;
+  }
+  
+  .auth-switch {
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  .switch-mode-button {
+    background: none;
+    border: none;
+    color: #3498db;
+    cursor: pointer;
+    text-decoration: underline;
+    font-size: 0.9rem;
+  }
+  
+  .switch-mode-button:hover {
+    color: #2980b9;
+  }

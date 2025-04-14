@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { updateProfile } from 'firebase/auth';
 import './Header.css';
-import './ProfileModal.css'; // Новый файл стилей для модалки
+import './ProfileModal.css';
 
 export default function Header() {
   const [user, setUser] = useState(null);
@@ -15,30 +15,42 @@ export default function Header() {
     name: '',
     phone: ''
   });
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      if (user) {
-        try {
-          const docRef = doc(db, "users", user.uid);
-          const docSnap = await getDoc(docRef);
-          if (docSnap.exists()) {
-            setProfileData(docSnap.data());
-          } else {
-            await setDoc(docRef, {
-              name: user.displayName || '',
-              phone: '',
-              email: user.email
-            });
-          }
-        } catch (error) {
-          console.error("Error loading profile:", error);
-        }
+      setLoading(true);
+      setError(null);
+      
+      if (!user) {
+        setUser(null);
+        setLoading(false);
+        return;
       }
-      setUser(user);
-      setLoading(false);
+
+      try {
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
+        
+        if (docSnap.exists()) {
+          setProfileData(docSnap.data());
+        } else {
+          await setDoc(docRef, {
+            name: user.displayName || '',
+            phone: '',
+            email: user.email
+          });
+        }
+        setUser(user);
+      } catch (err) {
+        console.error("Error loading profile:", err);
+        setError("Ошибка загрузки профиля");
+      } finally {
+        setLoading(false);
+      }
     });
+    
     return unsubscribe;
   }, []);
 
@@ -49,16 +61,21 @@ export default function Header() {
 
   const handleSaveProfile = async () => {
     try {
+      setError(null);
       await updateProfile(auth.currentUser, {
         displayName: profileData.name
       });
+      
       await updateDoc(doc(db, "users", user.uid), {
         name: profileData.name,
         phone: profileData.phone
       });
+      
       setEditMode(false);
-    } catch (error) {
-      console.error("Error updating profile:", error);
+      showProfileModal(false);
+    } catch (err) {
+      console.error("Error updating profile:", err);
+      setError("Ошибка сохранения профиля");
     }
   };
 
@@ -66,6 +83,7 @@ export default function Header() {
     if (e.target === e.currentTarget) {
       setShowProfileModal(false);
       setEditMode(false);
+      setError(null);
     }
   };
 
@@ -95,7 +113,7 @@ export default function Header() {
 
       {showProfileModal && (
         <div className="profile-modal-overlay" onClick={closeModal}>
-          <div className="profile-modal-content">
+          <div className="profile-modal-content" onClick={(e) => e.stopPropagation()}>
             <button 
               className="modal-close-button"
               onClick={() => setShowProfileModal(false)}
@@ -104,6 +122,8 @@ export default function Header() {
             </button>
             
             <h2 className="modal-title">Ваш профиль</h2>
+            
+            {error && <div className="profile-error">{error}</div>}
             
             {editMode ? (
               <div className="profile-edit-form">
