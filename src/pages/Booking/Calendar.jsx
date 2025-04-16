@@ -75,6 +75,8 @@ export default function Calendar({ onDateSelect }) {
 
   if (loading) return <div className="loading">Загрузка...</div>;
 
+
+  
   return (
     <div className="calendar-wrapper">
       {/* Блок с информацией о текущей записи пользователя */}

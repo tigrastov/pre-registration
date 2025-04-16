@@ -28,7 +28,7 @@ export default function Header() {
         setLoading(false);
         return;
       }
-
+  
       try {
         const docRef = doc(db, "users", user.uid);
         const docSnap = await getDoc(docRef);
@@ -36,16 +36,18 @@ export default function Header() {
         if (docSnap.exists()) {
           setProfileData(docSnap.data());
         } else {
+          // Создаем документ только с базовыми полями
           await setDoc(docRef, {
             name: user.displayName || '',
             phone: '',
-            email: user.email
+            email: user.email,
+            createdAt: new Date().toISOString()
           });
         }
         setUser(user);
       } catch (err) {
         console.error("Error loading profile:", err);
-        setError("Ошибка загрузки профиля");
+        setError("Ошибка загрузки профиля. Попробуйте позже.");
       } finally {
         setLoading(false);
       }
@@ -61,20 +63,19 @@ export default function Header() {
 
   const handleSaveProfile = async () => {
     try {
-      setError(null);
       await updateProfile(auth.currentUser, {
         displayName: profileData.name
       });
       
-      await updateDoc(doc(db, "users", user.uid), {
+      await updateDoc(doc(db, "users", auth.currentUser.uid), {
         name: profileData.name,
-        phone: profileData.phone
+        phone: profileData.phone, // Обновляем телефон
+        lastUpdated: new Date().toISOString()
       });
       
       setEditMode(false);
-      showProfileModal(false);
+      setShowProfileModal(false);
     } catch (err) {
-      console.error("Error updating profile:", err);
       setError("Ошибка сохранения профиля");
     }
   };

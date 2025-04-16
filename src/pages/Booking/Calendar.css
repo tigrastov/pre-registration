@@ -1,33 +1,65 @@
+/* Calendar.css */
+
+/* Основной контейнер календаря */
 .calendar-wrapper {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-.calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.calendar-day {
-  padding: 15px 5px;
-  text-align: center;
-  border-radius: 8px;
-  cursor: pointer;
-  position: relative;
-  transition: all 0.2s;
-  height: 40px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  background: lightcyan;
+
+
 }
 
+/* Заголовок календаря */
+.calendar-wrapper h2 {
+  margin: 0;
+  padding: 0;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+/* Сетка календаря */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 40px);
+  gap: 8px;
+  margin-top: 10px;
+}
+
+/* Общий стиль дня */
+.calendar-day {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Номер дня */
+.day-number {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+/* Название дня (если используется) */
+.day-name {
+  font-size: 9px;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+/* Стили состояний дня */
 .calendar-day.available {
   background-color: #e8f5e9;
   border: 1px solid #a5d6a7;
+  color: #2e7d32;
 }
 
 .calendar-day.available:hover {
@@ -37,67 +69,87 @@
 .calendar-day.unavailable {
   background-color: #ffebee;
   border: 1px solid #ef9a9a;
+  color: #c62828;
   cursor: not-allowed;
-  opacity: 0.7;
 }
 
 .calendar-day.selected {
   background-color: #bbdefb;
   border: 1px solid #64b5f6;
-  font-weight: bold;
+  color: #0d47a1;
 }
 
 .calendar-day.today {
   border: 2px solid #ff9800;
+  color: #e65100;
 }
 
+.calendar-day.user-booked {
+  background-color: #e3f2fd;
+  border: 1px solid #90caf9;
+  color: #1565c0;
+}
+
+/* Метки в днях */
 .today-marker {
   position: absolute;
   top: 2px;
-  font-size: 10px;
+  font-size: 8px;
   color: #ff9800;
+  font-weight: bold;
 }
 
 .full-label {
   position: absolute;
   bottom: 2px;
-  font-size: 10px;
-  color: #d32f2f;
+  font-size: 8px;
+  color: #c62828;
+  font-weight: bold;
 }
 
+.user-booking-marker {
+  position: absolute;
+  bottom: 2px;
+  font-size: 8px;
+  color: #1565c0;
+  font-weight: bold;
+}
+
+/* Стили для информации о записи */
+.user-booking-info {
+  background: #e3f2fd;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  border-left: 4px solid #2196f3;
+}
+
+.user-booking-info h3 {
+  margin: 0 0 8px 0;
+  color: #0d47a1;
+  font-size: 1rem;
+}
+
+.user-booking-info p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+/* Индикатор загрузки */
 .loading {
   text-align: center;
   padding: 20px;
   color: #666;
 }
 
-/* Стили для информации о записи */
-.user-booking-info {
-  background: #e3f2fd;
-  padding: 15px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  border-left: 4px solid #2196f3;
-}
-
-.user-booking-info h3 {
-  margin-top: 0;
-  color: #0d47a1;
-}
-
-/* Стили для отметки в календаре */
-.user-booking-marker {
-  position: absolute;
-  bottom: 2px;
-  left: 0;
-  right: 0;
-  font-size: 10px;
-  color: #0d47a1;
-  font-weight: bold;
-}
-
-.calendar-day.user-booked {
-  position: relative;
-  background-color: #e3f2fd;
-  border: 1px solid #2196f3;
+/* Адаптация для мобильных */
+@media (max-width: 600px) {
+  .calendar-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+  
+  .calendar-wrapper {
+    padding: 10px;
+  }
 }
