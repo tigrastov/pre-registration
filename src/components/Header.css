@@ -60,3 +60,21 @@
 .profile-button:hover {
   background: rgba(255, 255, 255, 0.1);
 }
+
+/* Только исправление проблемы с инпутами */
+.profile-modal-content {
+  color: #333; /* Цвет текста по умолчанию для модалки */
+}
+
+.profile-edit-form input {
+  color: #333 !important; /* Цвет текста в инпутах */
+  background: white !important; /* Фон инпутов */
+  padding: 8px 12px !important;
+  border: 1px solid #ddd !important;
+}
+
+/* Гарантируем видимость текста в info-value */
+.info-value {
+  color: #333 !important;
+}
+

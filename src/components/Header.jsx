@@ -34,12 +34,17 @@ export default function Header() {
         const docSnap = await getDoc(docRef);
         
         if (docSnap.exists()) {
-          setProfileData(docSnap.data());
+          // Важное изменение: сохраняем ВСЕ данные из Firestore
+          setProfileData({
+            name: docSnap.data().name || user.displayName || '',
+            phone: docSnap.data().phone || '',
+            ...docSnap.data()
+          });
         } else {
-          // Создаем документ только с базовыми полями
+          // Создаем документ только если его действительно нет
           await setDoc(docRef, {
             name: user.displayName || '',
-            phone: '',
+            phone: '', // Не перезаписываем, если телефон уже был
             email: user.email,
             createdAt: new Date().toISOString()
           });
@@ -63,13 +68,14 @@ export default function Header() {
 
   const handleSaveProfile = async () => {
     try {
+      // Важное изменение: обновляем и профиль аутентификации, и Firestore
       await updateProfile(auth.currentUser, {
         displayName: profileData.name
       });
       
       await updateDoc(doc(db, "users", auth.currentUser.uid), {
         name: profileData.name,
-        phone: profileData.phone, // Обновляем телефон
+        phone: profileData.phone, // Гарантированно сохраняем телефон
         lastUpdated: new Date().toISOString()
       });
       
@@ -77,6 +83,7 @@ export default function Header() {
       setShowProfileModal(false);
     } catch (err) {
       setError("Ошибка сохранения профиля");
+      console.error("Save profile error:", err);
     }
   };
 
@@ -143,6 +150,8 @@ export default function Header() {
                     value={profileData.phone}
                     onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
                     placeholder="+7 (XXX) XXX-XX-XX"
+                    pattern="^[\d\+]{10,15}$"
+                    title="10-15 цифр или +"
                   />
                 </div>
                 
@@ -185,12 +194,15 @@ export default function Header() {
                   >
                     Редактировать
                   </button>
-                  <button 
-                    onClick={() => auth.signOut()}
-                    className="modal-button logout"
-                  >
-                    Выйти
-                  </button>
+                 <button 
+  onClick={() => {
+    auth.signOut();
+    setShowProfileModal(false); // Закрываем модалку при выходе
+  }}
+  className="modal-button logout"
+>
+  Выйти
+</button>
                 </div>
               </>
             )}

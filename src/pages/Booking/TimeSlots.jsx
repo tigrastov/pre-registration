@@ -78,7 +78,7 @@ export default function TimeSlots({ date, appointments, onBookingSuccess }) {
           );
         })}
       </div>
-
+  
       {showConfirmation && bookingData && (
         <div className="confirmation-modal">
           <h3>Подтверждение записи</h3>
@@ -90,12 +90,14 @@ export default function TimeSlots({ date, appointments, onBookingSuccess }) {
           </div>
           <div className="modal-actions">
             <button 
+              className="confirm-btn"
               onClick={confirmBooking}
               disabled={isLoading}
             >
               {isLoading ? 'Сохранение...' : 'Подтвердить'}
             </button>
             <button 
+              className="cancel-btn"
               onClick={() => setShowConfirmation(false)}
               disabled={isLoading}
             >
@@ -104,7 +106,7 @@ export default function TimeSlots({ date, appointments, onBookingSuccess }) {
           </div>
         </div>
       )}
-
+  
       {error && (
         <div className="error-message">
           {error}
