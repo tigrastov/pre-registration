@@ -88,6 +88,7 @@
   background-color: #e3f2fd;
   border: 1px solid #90caf9;
   color: #1565c0;
+  margin-top: 1px;
 }
 
 /* Метки в днях */
@@ -109,10 +110,10 @@
 
 .user-booking-marker {
   position: absolute;
-  bottom: 2px;
-  font-size: 8px;
+  bottom: 0px;
+  left: 10px;
+  font-size: 6px;
   color: #1565c0;
-  font-weight: bold;
 }
 
 /* Стили для информации о записи */

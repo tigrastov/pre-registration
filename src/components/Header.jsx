@@ -103,7 +103,7 @@ export default function Header() {
         <nav className="main-nav">
           <Link to="/" className="nav-link">Главная</Link>
           <Link to="/booking" className="nav-link">Запись</Link>
-          {user?.email === 'admin@example.com' && (
+          {user?.email === 'ura@admin.com' && (
             <Link to="/admin" className="nav-link">Админ</Link>
           )}
         </nav>
