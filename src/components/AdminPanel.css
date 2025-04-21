@@ -98,13 +98,6 @@ button.active {
   background: #2196f3;
 }
 
-button:last-child {
-  background: #f44336;
-}
-
-button:last-child:hover {
-  background: #d32f2f;
-}
 
 /* Все предыдущие стили остаются */
 
