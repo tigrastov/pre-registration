@@ -18,23 +18,29 @@ export default function Calendar({ onDateSelect }) {
   const [selectedDate, setSelectedDate] = useState(null);
   const [userBooking, setUserBooking] = useState(null);
 
-  // Загрузка записей и определение записи пользователя
+  // Загрузка записей для всех пользователей
   useEffect(() => {
-    if (!auth.currentUser) return;
-
     const q = query(collection(db, "appointments"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const apps = snapshot.docs.map(doc => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
+        sessionDate: new Date(`${doc.data().date}T${doc.data().time}`)
       }));
-      setAppointments(apps);
       
-      // Находим текущую запись пользователя
-      const userApp = apps.find(app => 
-        app.userId === auth.currentUser.uid
+      const sortedBookings = apps.sort((a, b) => 
+        a.sessionDate - b.sessionDate
       );
-      setUserBooking(userApp || null);
+      
+      setAppointments(sortedBookings);
+      
+      // Проверяем запись текущего пользователя (если авторизован)
+      if (auth.currentUser) {
+        const userApp = apps.find(app => 
+          app.userId === auth.currentUser.uid
+        );
+        setUserBooking(userApp || null);
+      }
       
       setLoading(false);
     });
@@ -42,7 +48,6 @@ export default function Calendar({ onDateSelect }) {
     return () => unsubscribe();
   }, []);
 
-  // Генерация дней календаря
   const generateCalendarDays = () => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -62,7 +67,6 @@ export default function Calendar({ onDateSelect }) {
     return days.slice(0, 35);
   };
 
-  // Обработчик выбора даты
   const handleDateClick = (date) => {
     const dateStr = formatLocalDate(date);
     const appsForDate = appointments.filter(app => app.date === dateStr);
@@ -75,12 +79,10 @@ export default function Calendar({ onDateSelect }) {
 
   if (loading) return <div className="loading">Загрузка...</div>;
 
-
-  
   return (
     <div className="calendar-wrapper">
-      {/* Блок с информацией о текущей записи пользователя */}
-      {userBooking && (
+      {/* Показываем информацию о записи только для авторизованных */}
+      {auth.currentUser && userBooking && (
         <div className="user-booking-info">
           <h3>Ваша текущая запись:</h3>
           <p>
@@ -102,7 +104,7 @@ export default function Calendar({ onDateSelect }) {
           const dateStr = formatLocalDate(date);
           const isToday = dateStr === formatLocalDate(new Date());
           const isFull = appointments.filter(app => app.date === dateStr).length >= 4;
-          const isUserBooked = userBooking && userBooking.date === dateStr;
+          const isUserBooked = auth.currentUser && userBooking && userBooking.date === dateStr;
           
           return (
             <div
@@ -126,7 +128,6 @@ export default function Calendar({ onDateSelect }) {
   );
 }
 
-// Вспомогательная функция
 const formatLocalDate = (date) => {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');

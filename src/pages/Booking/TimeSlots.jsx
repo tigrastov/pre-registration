@@ -1,23 +1,32 @@
 import { useState } from 'react';
 import { addDoc, collection, doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../../firebase';
+import Auth from '../../components/Auth';
 import './TimeSlots.css';
 
 const ALL_TIME_SLOTS = ['10:00', '11:00', '12:00', '14:00', '15:00', '16:00'];
 
-
 export default function TimeSlots({ date, appointments, onBookingSuccess }) {
   const [selectedTime, setSelectedTime] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const [bookingData, setBookingData] = useState(null);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleTimeSelect = async (time) => {
+  const handleTimeSelect = (time) => {
     setError(null);
     setSelectedTime(time);
 
-    // Проверка на повторную запись
+    if (!auth.currentUser) {
+      setShowAuthModal(true);
+      return;
+    }
+
+    checkExistingBooking(time);
+  };
+
+  const checkExistingBooking = (time) => {
     const alreadyBooked = appointments.some(
       app => app.userId === auth.currentUser?.uid && app.date === date
     );
@@ -27,8 +36,11 @@ export default function TimeSlots({ date, appointments, onBookingSuccess }) {
       return;
     }
 
+    prepareBookingData(time);
+  };
+
+  const prepareBookingData = async (time) => {
     try {
-      // Получаем данные пользователя
       const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
       const userData = userDoc.data();
 
@@ -103,6 +115,35 @@ export default function TimeSlots({ date, appointments, onBookingSuccess }) {
             >
               Отменить
             </button>
+          </div>
+        </div>
+      )}
+
+      {showAuthModal && (
+        <div className="confirmation-modal" style={{ zIndex: 1000 }}>
+          <div className="modal-content">
+            <button 
+              className="modal-close-button"
+              onClick={() => setShowAuthModal(false)}
+              style={{
+                position: 'absolute',
+                right: '10px',
+                top: '10px',
+                background: 'none',
+                border: 'none',
+                fontSize: '1.5rem',
+                cursor: 'pointer'
+              }}
+            >
+              &times;
+            </button>
+            <Auth 
+              mode="login" 
+              onSuccess={() => {
+                setShowAuthModal(false);
+                if (selectedTime) checkExistingBooking(selectedTime);
+              }} 
+            />
           </div>
         </div>
       )}

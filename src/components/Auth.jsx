@@ -9,7 +9,7 @@ import { doc, setDoc } from 'firebase/firestore'
 import { auth, db } from '../firebase'
 import './Auth.css'
 
-export default function Auth({ mode = 'login' }) {
+export default function Auth({ mode = 'login', onSuccess }) {
   const [form, setForm] = useState({ 
     email: '', 
     password: '', 
@@ -49,7 +49,7 @@ export default function Auth({ mode = 'login' }) {
       } else {
         await signInWithEmailAndPassword(auth, form.email, form.password)
       }
-      navigate('/booking')
+      onSuccess ? onSuccess() : navigate('/booking');
     } catch (err) {
       setError(err.message)
     } finally {
