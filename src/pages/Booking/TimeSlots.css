@@ -1,11 +1,11 @@
-/* BookingStyles.css */
 
-/* Основные стили */
+
+
 .booking-container {
   display: flex;
   gap: 30px;
-  margin-top: 30px; /* Увеличенный отступ сверху */
-  padding-top: 20px; /* Дополнительный отступ */
+  margin-top: 30px; 
+  padding-top: 20px; 
   background-color: lightcyan;
 }
 
@@ -15,28 +15,28 @@
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  margin-top: 20px; /* Опускаем панель ниже */
+  margin-top: 20px; 
 }
 
 .time-panel-title {
   color: white; 
   margin-top: 5px;
-  margin-bottom: 20px; /* Увеличенный отступ */
-  font-size: 1.3rem; /* Чуть крупнее */
+  margin-bottom: 20px; 
+  font-size: 1.3rem; 
   text-align: center;
   font-weight: 600;
 }
 
-/* Сетка времени */
+
 .time-slots-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 10px; /* Увеличенный промежуток */
+  gap: 10px; 
 }
 
 .time-slot {
   padding: 10px 8px;
-  background: lightseagreen; /* Белый фон ячеек */
+  background: lightseagreen; 
   color: white;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
@@ -51,14 +51,14 @@
 }
 
 .time-slot:hover {
-  background: #e3f2fd; /* Голубоватый фон при наведении */
+  background: #e3f2fd; 
   transform: translateY(-3px);
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   border-color: #bbdefb;
 }
 
 .time-slot.selected {
-  background: #bbdefb; /* Голубой для выбранного */
+  background: #bbdefb; 
   border-color: #64b5f6;
   color: #0d47a1;
   font-weight: 500;
@@ -82,7 +82,7 @@
   border-radius: 4px;
 }
 
-/* Модальное окно */
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -178,7 +178,7 @@
   background: #e0e0e0;
 }
 
-/* Оповещения об ошибках */
+
 .error-notification {
   position: fixed;
   bottom: 30px;
@@ -208,10 +208,10 @@
   padding-left: 20px;
 }
 
-/* Адаптивность */
-/* ТОЛЬКО ЭТИ ИЗМЕНЕНИЯ */
 
-/* 1. Делаем временные слоты крупнее (только для десктопа) */
+
+
+
 @media (min-width: 769px) {
   .time-selection-panel {
     width: 320px;
@@ -223,9 +223,9 @@
   }
 }
 
-/* 2. На мобильных - временные слоты ПЕРЕД календарем */
+
 @media (max-width: 768px) {
   .booking-container {
-    flex-direction: column-reverse; /* Единственное изменение порядка */
+    flex-direction: column-reverse; 
   }
 }

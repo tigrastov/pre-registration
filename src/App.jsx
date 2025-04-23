@@ -13,7 +13,7 @@ function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Проверяем статус аутентификации
+
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(user => {
       setUser(user);
@@ -31,13 +31,13 @@ function App() {
       <Header />
       <main className="main-content">
         <Routes>
-          {/* Публичные роуты */}
+
           <Route path="/" element={<Home />} />
           <Route path="/booking" element={<Booking />} />
           <Route path="/login" element={<Auth mode="login" />} />
           <Route path="/register" element={<Auth mode="register" />} />
 
-          {/* Админ-роуты */}
+
           <Route
             path="/admin"
             element={
@@ -47,7 +47,7 @@ function App() {
             }
           />
 
-          {/* Роут для несуществующих страниц */}
+
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

@@ -1,7 +1,7 @@
 import './Booking.css';
 import Calendar from './Calendar';
 import TimeSlots from './TimeSlots';
-import { useState, useEffect } from 'react'; // Добавлен импорт useEffect
+import { useState, useEffect } from 'react'; 
 import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from '../../firebase';
 
@@ -9,7 +9,7 @@ export default function Booking() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [appointments, setAppointments] = useState([]);
 
-  // Загружаем список всех бронирований
+
   useEffect(() => {
     const q = collection(db, "appointments");
     const unsubscribe = onSnapshot(q, (snapshot) => {

@@ -14,7 +14,7 @@ export default function AdminPanel() {
         status: newStatus 
       });
       
-      // Обновляем локальное состояние
+      //  локальное состояние
       setBookings(bookings.map(booking => 
         booking.id === id ? { ...booking, status: newStatus } : booking
       ));

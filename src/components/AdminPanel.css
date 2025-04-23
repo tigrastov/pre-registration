@@ -99,7 +99,7 @@ button.active {
 }
 
 
-/* Все предыдущие стили остаются */
+
 
 .booking-header {
   display: flex;
@@ -120,7 +120,7 @@ button.active {
   margin: 10px 0;
 }
 
-/* Улучшаем отображение карточек */
+
 .booking-card {
   background: lightgray;
   border-radius: 8px;
@@ -136,7 +136,7 @@ button.active {
   box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
-/* Кнопки действий */
+
 .booking-actions {
   display: flex;
   gap: 10px;
@@ -144,7 +144,7 @@ button.active {
   justify-content: flex-end;
 }
 
-/* Admin.css */
+
 button.active {
   background: #4caf50;
   color: white;

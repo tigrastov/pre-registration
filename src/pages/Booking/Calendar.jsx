@@ -18,7 +18,7 @@ export default function Calendar({ onDateSelect }) {
   const [selectedDate, setSelectedDate] = useState(null);
   const [userBooking, setUserBooking] = useState(null);
 
-  // Загрузка записей для всех пользователей
+
   useEffect(() => {
     const q = query(collection(db, "appointments"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -34,7 +34,7 @@ export default function Calendar({ onDateSelect }) {
       
       setAppointments(sortedBookings);
       
-      // Проверяем запись текущего пользователя (если авторизован)
+
       if (auth.currentUser) {
         const userApp = apps.find(app => 
           app.userId === auth.currentUser.uid
@@ -81,7 +81,7 @@ export default function Calendar({ onDateSelect }) {
 
   return (
     <div className="calendar-wrapper">
-      {/* Показываем информацию о записи только для авторизованных */}
+
       {auth.currentUser && userBooking && (
         <div className="user-booking-info">
           <h3>Ваша текущая запись:</h3>

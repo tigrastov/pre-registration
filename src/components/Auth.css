@@ -95,9 +95,9 @@
 
 
 .auth-container input {
-  color: #000 !important; /* Черный цвет текста */
+  color: #000 !important; 
 }
 
 .auth-container input::placeholder {
-  color: #999 !important; /* Серый цвет placeholder */
+  color: #999 !important; 
 }

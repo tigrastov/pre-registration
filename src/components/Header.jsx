@@ -7,6 +7,7 @@ import './Header.css';
 import './ProfileModal.css';
 
 export default function Header() {
+  const [menuOpen, setMenuOpen] = useState(false);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showProfileModal, setShowProfileModal] = useState(false);
@@ -34,17 +35,15 @@ export default function Header() {
         const docSnap = await getDoc(docRef);
         
         if (docSnap.exists()) {
-          // Важное изменение: сохраняем ВСЕ данные из Firestore
           setProfileData({
             name: docSnap.data().name || user.displayName || '',
             phone: docSnap.data().phone || '',
             ...docSnap.data()
           });
         } else {
-          // Создаем документ только если его действительно нет
           await setDoc(docRef, {
             name: user.displayName || '',
-            phone: '', // Не перезаписываем, если телефон уже был
+            phone: '',
             email: user.email,
             createdAt: new Date().toISOString()
           });
@@ -61,21 +60,29 @@ export default function Header() {
     return unsubscribe;
   }, []);
 
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
+
+  const closeMenu = () => {
+    setMenuOpen(false);
+  };
+
   const handleAuthClick = () => {
     if (loading) return;
     user ? setShowProfileModal(true) : navigate('/login');
+    closeMenu();
   };
 
   const handleSaveProfile = async () => {
     try {
-      // Важное изменение: обновляем и профиль аутентификации, и Firestore
       await updateProfile(auth.currentUser, {
         displayName: profileData.name
       });
       
       await updateDoc(doc(db, "users", auth.currentUser.uid), {
         name: profileData.name,
-        phone: profileData.phone, // Гарантированно сохраняем телефон
+        phone: profileData.phone,
         lastUpdated: new Date().toISOString()
       });
       
@@ -98,16 +105,40 @@ export default function Header() {
   return (
     <header className="header">
       <div className="header-container">
-        <Link to="/" className="logo">Массажный кабинет</Link>
-        
-        <nav className="main-nav">
-          <Link to="/" className="nav-link">Главная</Link>
-          <Link to="/booking" className="nav-link">Запись</Link>
+       
+      <Link to="/" className="logo" onClick={closeMenu}>
+       Массажный кабинет
+      </Link>
+
+
+        <button 
+          className={`burger-menu ${menuOpen ? 'open' : ''}`} 
+          onClick={toggleMenu}
+          aria-label="Меню"
+        >
+          <span className="burger-line"></span>
+          <span className="burger-line"></span>
+          <span className="burger-line"></span>
+        </button>
+
+        <nav className={`main-nav ${menuOpen ? 'open' : ''}`}>
+          <Link to="/" className="nav-link" onClick={closeMenu}>Главная</Link>
+          <Link to="/booking" className="nav-link" onClick={closeMenu}>Онлайн запись</Link>
           {user?.email === 'ura@admin.com' && (
-            <Link to="/admin" className="nav-link">Админ</Link>
+            <Link to="/admin" className="nav-link" onClick={closeMenu}>Админ</Link>
           )}
+          
+          <div className="mobile-user-controls">
+            <button 
+              onClick={handleAuthClick} 
+              className="auth-button"
+              disabled={loading}
+            >
+              {loading ? '...' : user ? user.displayName || 'Профиль' : 'Войти'}
+            </button>
+          </div>
         </nav>
-        
+
         <div className="user-controls">
           <button 
             onClick={handleAuthClick} 
@@ -194,15 +225,15 @@ export default function Header() {
                   >
                     Редактировать
                   </button>
-                 <button 
-  onClick={() => {
-    auth.signOut();
-    setShowProfileModal(false); // Закрываем модалку при выходе
-  }}
-  className="modal-button logout"
->
-  Выйти
-</button>
+                  <button 
+                    onClick={() => {
+                      auth.signOut();
+                      setShowProfileModal(false);
+                    }}
+                    className="modal-button logout"
+                  >
+                    Выйти
+                  </button>
                 </div>
               </>
             )}
