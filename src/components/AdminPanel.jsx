@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { collection, onSnapshot, doc, updateDoc } from 'firebase/firestore';
+import { collection, onSnapshot, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import './AdminPanel.css';
 
@@ -7,19 +7,25 @@ export default function AdminPanel() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Функция обновления статуса
+
   const handleStatusUpdate = async (id, newStatus) => {
     try {
       await updateDoc(doc(db, 'appointments', id), { 
         status: newStatus 
       });
-      
-      //  локальное состояние
-      setBookings(bookings.map(booking => 
-        booking.id === id ? { ...booking, status: newStatus } : booking
-      ));
     } catch (error) {
       console.error('Ошибка при обновлении статуса:', error);
+    }
+  };
+
+
+  const handleDeleteBooking = async (id) => {
+    if (window.confirm('Вы точно хотите удалить эту запись?')) {
+      try {
+        await deleteDoc(doc(db, 'appointments', id));
+      } catch (error) {
+        console.error('Ошибка при удалении:', error);
+      }
     }
   };
 
@@ -31,7 +37,6 @@ export default function AdminPanel() {
         sessionDate: new Date(`${doc.data().date}T${doc.data().time}`)
       }));
       
-      // Сортировка по дате сеанса
       const sortedBookings = bookingsData.sort((a, b) => 
         a.sessionDate - b.sessionDate
       );
@@ -55,7 +60,13 @@ export default function AdminPanel() {
               <h3>{booking.userName}</h3>
               <p>📞 {booking.userPhone}</p>
               <p>📅 {booking.date} в {booking.time}</p>
-              <p>Статус: {booking.status || 'ожидает'}</p>
+              <p className="status">
+                Статус: {booking.status === 'confirmed' 
+                  ? 'Подтвержден' 
+                  : booking.status === 'cancelled' 
+                    ? 'Отменен' 
+                    : 'Не подтвержден'}
+              </p>
             </div>
             
             <div className="booking-actions">
@@ -70,6 +81,12 @@ export default function AdminPanel() {
                 className={booking.status === 'cancelled' ? 'active' : ''}
               >
                 Отменить
+              </button>
+              <button 
+                onClick={() => handleDeleteBooking(booking.id)}
+                className="delete-button"
+              >
+                Удалить
               </button>
             </div>
           </div>
